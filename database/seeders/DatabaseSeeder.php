@@ -21,8 +21,8 @@ class DatabaseSeeder extends Seeder
         $branch = Branch::factory(3)->create();
         $department = Department::factory(5)->create();
         Employee::factory(10)->create([
-            'branch_id' => $branch->random()->id,
-            'department_id' => $department->random()->id,
+            'branch_id' => fn() => $branch->random()->id,
+            'department_id' => fn() => $department->random()->id,
         ]);
 
         User::factory()->create([
