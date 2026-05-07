@@ -25,4 +25,9 @@ class Employee extends Model
     {
         return $this->hasOne(User::class);
     }
+    
+    public function loans()
+    {
+        return $this->hasMany(Loan::class);
+    }
 }
