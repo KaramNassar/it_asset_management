@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Branch;
+use App\Models\Department;
+use App\Models\Employee;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,11 +18,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $branch = Branch::factory(3)->create();
+        $department = Department::factory(5)->create();
+        Employee::factory(10)->create([
+            'branch_id' => $branch->random()->id,
+            'department_id' => $department->random()->id,
+        ]);
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin',
+            'email' => 'admin@test.com',
+            'password' => bcrypt('password'),
+            'employee_id' => null,
         ]);
     }
 }
