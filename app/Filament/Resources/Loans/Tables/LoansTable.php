@@ -11,6 +11,7 @@ use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\DB;
 
 class LoansTable
 {
@@ -53,29 +54,44 @@ class LoansTable
             ->recordActions([
                 Action::make('return_asset')
                     ->label('Return')
-                    ->visible(fn($record) => (bool) $record->is_active)
-                    ->form([
+                    ->visible(fn ($record) => (bool) $record->is_active)
+                    ->schema([
                         DateTimePicker::make('returned_at')
                             ->default(now())
                             ->required(),
                         Textarea::make('notes'),
                     ])
                     ->action(function (array $data, $record) {
-                        $record->update([
-                            'returned_at' => $data['returned_at'],
-                            'notes' => $data['notes'] ?? $record->notes,
-                            'is_active' => false,
-                        ]);
+                        DB::transaction(function () use ($data, $record) {
+                            $loan = $record->newQuery()
+                                ->whereKey($record->getKey())
+                                ->lockForUpdate()
+                                ->firstOrFail();
 
-                        $record->asset()->update([
-                            'status' => AssetStatus::Maintenance,
-                        ]);
+                            $asset = $loan->asset()
+                                ->lockForUpdate()
+                                ->firstOrFail();
+
+                            if (! $loan->is_active) {
+                                return;
+                            }
+
+                            $loan->update([
+                                'returned_at' => $data['returned_at'],
+                                'notes' => $data['notes'] ?? $loan->notes,
+                                'is_active' => false,
+                            ]);
+
+                            $asset->update([
+                                'status' => AssetStatus::Maintenance,
+                            ]);
+                        });
                     }),
 
                 Action::make('finish_inspection')
                     ->label('Finish Inspection')
-                    ->visible(fn($record) => filled($record->returned_at) && blank($record->condition_on_return))
-                    ->form([
+                    ->visible(fn ($record) => filled($record->returned_at) && blank($record->condition_on_return))
+                    ->schema([
                         Select::make('condition_on_return')
                             ->options(AssetCondition::class)
                             ->required(),
@@ -93,14 +109,29 @@ class LoansTable
                         Textarea::make('notes'),
                     ])
                     ->action(function (array $data, $record) {
-                        $record->update([
-                            'condition_on_return' => $data['condition_on_return'],
-                            'notes' => $data['notes'] ?? $record->notes,
-                        ]);
+                        DB::transaction(function () use ($data, $record) {
+                            $loan = $record->newQuery()
+                                ->whereKey($record->getKey())
+                                ->lockForUpdate()
+                                ->firstOrFail();
 
-                        $record->asset()->update([
-                            'status' => $data['asset_status_after_inspection'],
-                        ]);
+                            $asset = $loan->asset()
+                                ->lockForUpdate()
+                                ->firstOrFail();
+
+                            if (blank($loan->returned_at) || filled($loan->condition_on_return)) {
+                                return;
+                            }
+
+                            $loan->update([
+                                'condition_on_return' => $data['condition_on_return'],
+                                'notes' => $data['notes'] ?? $loan->notes,
+                            ]);
+
+                            $asset->update([
+                                'status' => $data['asset_status_after_inspection'],
+                            ]);
+                        });
                     }),
             ]);
     }

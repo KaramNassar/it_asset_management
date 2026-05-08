@@ -1,0 +1,53 @@
+[33mcommit 423b4e3e03329edeaabc0db57ea000ef2482fa29[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Karam <karam.nassar@hotmail.com>
+Date:   Fri May 8 01:26:50 2026 +0300
+
+    Setup assets, categories, and loans schemas, models, and seeders
+
+[33mcommit db2e8014df4c2cf425ba74b3022ca48d5df9d1cf[m
+Author: Karam <karam.nassar@hotmail.com>
+Date:   Thu May 7 20:16:36 2026 +0200
+
+    Generate Filament resource for branches, departments, and employees
+
+[33mcommit 6d7ad71cb234e3b562e44bee787ebcef555f52ba[m
+Author: Karam <karam.nassar@hotmail.com>
+Date:   Thu May 7 17:59:01 2026 +0200
+
+    Setup employee, department, and branch schemas, models, and seeders
+
+[33mcommit 5c31af42b1c1a1bc34379a8154164b2a4aba2fed[m
+Author: Karam <karam.nassar@hotmail.com>
+Date:   Thu May 7 15:13:54 2026 +0200
+
+    Redirect homepage to dashboard
+
+[33mcommit 68d1a856a2f02be100a9932a1d380c57442f17fd[m
+Author: Karam <karam.nassar@hotmail.com>
+Date:   Thu May 7 13:42:01 2026 +0200
+
+    Install Filament v5 and initial configuration
+
+[33mcommit 2ab9863bea3ef2f92c065c3c2e53d6c8669a6b25[m
+Author: Karam <karam.nassar@hotmail.com>
+Date:   Thu May 7 13:18:14 2026 +0200
+
+    Configure Boost post-update script
+
+[33mcommit 0ac615009c878d4dbef70c2f67a1262489199abd[m
+Author: Karam <karam.nassar@hotmail.com>
+Date:   Thu May 7 13:18:14 2026 +0200
+
+    Install Laravel Boost
+
+[33mcommit 0d21e87969ec5797a285e85994f0707dd6073426[m
+Author: Karam <karam.nassar@hotmail.com>
+Date:   Thu May 7 13:17:23 2026 +0200
+
+    Install Pest
+
+[33mcommit b06624d19fc90cc5fa25937cfcebd5d8d0919028[m
+Author: Karam <karam.nassar@hotmail.com>
+Date:   Thu May 7 13:16:24 2026 +0200
+
+    Set up a fresh Laravel app
