@@ -1,58 +1,148 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# IT Asset Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Table of Contents
+- [Overview](#overview)
+- [Requirements](#requirements)
+- [Installation & Setup](#installation--setup)
+- [Database Schema](#database-schema)
+- [Entity Relationships](#entity-relationships)
+- [Business Rules & Constraints](#business-rules--constraints)
+- [Reports](#reports)
+- [Concurrency & Inspection Flow (Requirement #5)](#concurrency--inspection-flow-requirement-5)
+- [Tech Stack](#tech-stack)
 
-## About Laravel
+## Overview
+A comprehensive internal system for managing IT assets and tracking their lifecycle across company branches. The system handles asset allocation, returns, technical inspections, and provides intelligent reporting for optimal asset distribution and accountability.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Requirements
+- PHP 8.3+
+- Composer
+- MySQL 8.0+
+- Node.js & NPM
+- Laravel 13
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Installation & Setup
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd it-asset-management
+   ```
 
-## Learning Laravel
+2. **Install dependencies:**
+   ```bash
+   composer install
+   npm install
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+3. **Environment configuration:**
+   ```bash
+   cp .env.example .env
+   php artisan key:generate
+   ```
+   Update your `.env` file with your database credentials:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=it_asset_management
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+4. **Run migrations:**
+   ```bash
+   php artisan migrate
+   ```
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+5. **Seed the database (optional):**
+   ```bash
+   php artisan db:seed
+   ```
 
-## Agentic Development
+6. **Build assets:**
+   ```bash
+   npm run build
+   ```
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+7. **Start the application:**
+   ```bash
+   php artisan serve
+   ```
+   Access the dashboard at `http://localhost:8000/admin`.
 
-```bash
-composer require laravel/boost --dev
+## Database Schema
 
-php artisan boost:install
-```
+![Entity Relationship Diagram](public/erd.jpg)
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+*The ERD illustrates the relationships between branches, departments, employees, categories, assets, and loans.*
 
-## Contributing
+## Entity Relationships
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Entity | Description | Key Relationships |
+|--------|-------------|-------------------|
+| **Branch** | Company branch/location | Has many employees |
+| **Department** | Organizational department | Has many employees |
+| **Employee** | Staff member borrowing assets | Belongs to a branch & department; Has many loans |
+| **Category** | Asset type/classification (e.g., Laptop, Monitor) | Has many assets |
+| **Asset** | Individual IT equipment item | Belongs to a category; Has many loans; Tracks status |
+| **Loan** | Asset borrowing record | Links an employee to an asset; Tracks delivery/return conditions and dates |
 
-## Code of Conduct
+## Business Rules & Constraints
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. **Single Asset per Category per Employee:** An employee cannot borrow multiple assets of the same category simultaneously. They must return the current asset before borrowing another from the same category.
+2. **Asset Availability Check:** Only assets with `Available` status can be loaned out.
+3. **Dual-Asset Validation:** The system validates both the employee's active loans and the asset's current status before confirming a loan.
+4. **Technical Condition Tracking:** Every loan records the asset's condition at delivery (`condition_on_delivery`) and at return (`condition_on_return`).
 
-## Security Vulnerabilities
+## Reports
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+The system provides three intelligent reports for asset management insights:
 
-## License
+### 1. Heavy Usage Report
+Identifies employees who have borrowed more than 3 distinct assets in the last 6 months. Helps monitor asset distribution patterns and identify high-demand users.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 2. Idle Assets Report
+Lists assets that have not been loaned for over a year (or never loaned), including days in stock. Helps identify underutilized inventory for reallocation or disposal.
+
+### 3. Branch Inventory Report
+Shows the total count of active assets per category assigned to employees in a selected branch, filtered by "Excellent" delivery condition. Provides branch-level asset accountability.
+
+## Concurrency & Inspection Flow (Requirement #5)
+
+### The Scenario
+An employee returns an asset while another employee attempts to borrow it simultaneously. The system must ensure the asset undergoes a mandatory inspection phase before becoming available again, and must track accountability for any discovered damage.
+
+### How the System Solves It
+
+#### 1. Inspection Phase Isolation
+When an asset is returned via the `Return` action:
+- The loan record is updated with `returned_at` and marked as inactive (`is_active = false`).
+- The asset's status is immediately changed to `Maintenance`.
+- Both operations are wrapped in a **database transaction** with **row-level locking** (`lockForUpdate()`), preventing race conditions.
+
+Because the loan creation flow only allows assets with `Available` status, any concurrent loan attempts will fail to see or select the asset while it is in `Maintenance`.
+
+#### 2. Post-Inspection Release
+After the IT team inspects the device, the `Finish Inspection` action is used:
+- The inspector records the returned condition (`condition_on_return`).
+- The inspector chooses the next status: `Available`, `Maintenance`, or `Broken`.
+- Only when set to `Available` can the asset be loaned out again.
+
+#### 3. Damage Accountability
+If damage is discovered during inspection:
+- The inspector records it in `condition_on_return` and adds inspection notes.
+- The responsible employee is directly identified from the same loan record via `employee_id`.
+- The `condition_on_delivery` vs `condition_on_return` comparison clearly shows the asset's state before and after the employee's custody.
+- Historical loan records provide a complete audit trail of every handover and inspection.
+
+#### 4. Technical Implementation Details
+- **Loan Creation:** Wrapped in `DB::transaction()` with `Asset::lockForUpdate()` to prevent double-booking.
+- **Return Process:** Atomic update of loan and asset status prevents intermediate states.
+- **Validation Layer:** Form-level validation in `LoanForm.php` provides immediate user feedback, while database-level constraints and transactions ensure data integrity under concurrent load.
+
+## Tech Stack
+- **Backend:** Laravel 13 (PHP 8.3+)
+- **Admin Panel:** Filament 5
+- **Database:** MySQL 8.0+
+- **Frontend:** Vite, TailwindCSS
