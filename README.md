@@ -25,7 +25,7 @@ A comprehensive internal system for managing IT assets and tracking their lifecy
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/KaramNassar/it_asset_management.git
    cd it-asset-management
    ```
 
@@ -69,7 +69,7 @@ A comprehensive internal system for managing IT assets and tracking their lifecy
    ```bash
    php artisan serve
    ```
-   Access the dashboard at `http://localhost:8000/admin`.
+   Access the dashboard at `http://localhost:8000/dashboard`.
 
 ## Database Schema
 
