@@ -2,7 +2,9 @@
 
 namespace App;
 
-enum AssetStatus: string
+use Filament\Support\Contracts\HasColor;
+
+enum AssetStatus: string implements HasColor
 {
     case Available = 'available';
     case Assigned = 'assigned';
@@ -10,13 +12,13 @@ enum AssetStatus: string
     case Broken = 'broken';
     case Archived = 'archived';
 
-    public function color(): string
+    public function getColor(): string
     {
         return match($this) {
-            self::Available => 'green',
-            self::Assigned => 'blue',
-            self::Maintenance => 'yellow',
-            self::Broken => 'red',
+            self::Available => 'success',
+            self::Assigned => 'info',
+            self::Maintenance => 'warning',
+            self::Broken => 'danger',
             self::Archived => 'gray',
         };
     }
