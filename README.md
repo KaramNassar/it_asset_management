@@ -26,7 +26,7 @@ A comprehensive internal system for managing IT assets and tracking their lifecy
 1. **Clone the repository:**
    ```bash
    git clone https://github.com/KaramNassar/it_asset_management.git
-   cd it-asset-management
+   cd it_asset_management
    ```
 
 2. **Install dependencies:**
