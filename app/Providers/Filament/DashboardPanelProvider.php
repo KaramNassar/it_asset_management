@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Widgets\DashboardStatsOverview;
+use App\Filament\Widgets\RecentLoansTable;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -40,6 +42,8 @@ class DashboardPanelProvider extends PanelProvider
             ->widgets([
                 AccountWidget::class,
                 FilamentInfoWidget::class,
+                DashboardStatsOverview::class,
+                RecentLoansTable::class,
             ])
             ->middleware([
                 EncryptCookies::class,
