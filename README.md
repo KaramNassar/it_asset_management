@@ -70,6 +70,10 @@ A comprehensive internal system for managing IT assets and tracking their lifecy
    php artisan serve
    ```
    Access the dashboard at `http://localhost:8000/dashboard`.
+   
+   **Default Admin Account (after seeding):**
+   - **Email:** `admin@test.com`
+   - **Password:** `password`
 
 ## Database Schema
 
